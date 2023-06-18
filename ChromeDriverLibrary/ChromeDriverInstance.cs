@@ -8,9 +8,14 @@ namespace ChromeDriverLibrary
     {
         private static readonly object _lockUserDir = new();
 
-        public static Tuple<UndetectedChromeDriver?, string> GetInstance(int positionX, int positionY,
-            string? proxy = null, bool isHeadless = true,
-            List<string>? extensionPaths = null, bool disableImg = true, bool privateMode = true, CancellationToken? token = null)
+        public static Tuple<UndetectedChromeDriver?, string> GetInstance(int positionX, 
+            int positionY,
+            string? proxy = null, 
+            bool isHeadless = true,
+            List<string>? extensionPaths = null, 
+            bool disableImg = true, 
+            bool privateMode = true, 
+            CancellationToken? token = null)
         {
             UndetectedChromeDriver? driver = null;
             var userDataDir = GetUserDir();
@@ -51,7 +56,8 @@ namespace ChromeDriverLibrary
                 if (privateMode) options.AddArgument("--incognito");
                 if (disableImg) options.AddArgument("--blink-settings=imagesEnabled=false");
 
-                driver = UndetectedChromeDriver.Create(driverExecutablePath: "chromedriver/chromedriver.exe",
+                var chromeDriverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chromedriver", "chromedriver.exe");
+                driver = UndetectedChromeDriver.Create(driverExecutablePath: chromeDriverPath,
                     userDataDir: userDataDir,
                     headless: isHeadless,
                     hideCommandPromptWindow: true,

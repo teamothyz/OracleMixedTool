@@ -89,7 +89,7 @@ namespace OracleMixedTool.Services
             }
         }
 
-        public static void WriteSuccessData(Account acc, List<string> bills)
+        public static void WriteSuccessData(Account acc)
         {
             lock (lockSuccess)
             {
@@ -104,7 +104,7 @@ namespace OracleMixedTool.Services
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
                     using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{string.Join(":", bills)}";
+                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}";
                     writer.WriteLine(data);
                     writer.Flush();
                     writer.Close();
@@ -131,7 +131,7 @@ namespace OracleMixedTool.Services
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
                     using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{reason}";
+                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}:{reason}";
                     writer.WriteLine(data);
                     writer.Flush();
                     writer.Close();
@@ -158,7 +158,7 @@ namespace OracleMixedTool.Services
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
                     using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{reason}";
+                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}:{reason}";
                     writer.WriteLine(data);
                     writer.Flush();
                     writer.Close();

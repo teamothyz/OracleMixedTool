@@ -8,10 +8,14 @@
 
         public int PasswordIndex { get; set; } = 1;
 
-        public string NewpassWord { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
 
         public List<string> ToBeDeleteInstances { get; set; } = new();
 
+        public List<string> ToBeRebootInstances { get; set; } = new();
+
         public string ToBeCreateInstance { get; set; } = null!;
+
+        public ImgType Image { get; set; } = ImgType.Ampere;
     }
 }

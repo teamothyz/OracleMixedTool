@@ -66,12 +66,8 @@ namespace ChromeDriverLibrary
             {
                 var value = element.GetAttribute("value");
                 if (value == content) return true;
-
-                var innerHtml = (string)driver.ExecuteScript("return arguments[0].innerHTML;", element);
-                if (innerHtml == content) return true;
-
-                var innerText = (string)driver.ExecuteScript("return arguments[0].innerText;", element);
-                if (innerText == content) return true;
+                if (driver.GetInnerHTML(element) == content) return true;
+                if (driver.GetInnerText(element) == content) return true;
 
                 throw new InvalidElementStateException("content does not match");
             }
@@ -79,6 +75,16 @@ namespace ChromeDriverLibrary
             {
                 throw new InvalidElementStateException(ex.Message);
             }
+        }
+
+        public static string GetInnerHTML(this UndetectedChromeDriver driver, IWebElement element)
+        {
+            return (string)driver.ExecuteScript("return arguments[0].innerHTML;", element);
+        }
+
+        public static string GetInnerText(this UndetectedChromeDriver driver, IWebElement element)
+        {
+            return (string)driver.ExecuteScript("return arguments[0].innerText;", element);
         }
 
         private static WebDriverWait GetWaiter(UndetectedChromeDriver driver, int timeout)
