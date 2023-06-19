@@ -104,8 +104,16 @@ namespace OracleMixedTool.Services
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
                     using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}";
-                    writer.WriteLine(data);
+                    writer.WriteLine("Email: " + acc.Email);
+                    writer.WriteLine("Password: " + acc.CurrentPassword);
+                    writer.WriteLine("New Password: " + acc.NewPassword);
+                    writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
+                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+
+                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+                    writer.WriteLine("Instances: " + string.Join(";", acc.CurrentInstances));
                     writer.Flush();
                     writer.Close();
                 }
