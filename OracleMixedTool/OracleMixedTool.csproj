@@ -6,7 +6,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Forms\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Forms\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krypton.Toolkit" Version="70.22.11.312" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ChromeDriverLibrary\ChromeDriverLibrary.csproj" />

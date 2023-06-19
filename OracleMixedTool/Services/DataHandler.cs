@@ -11,6 +11,72 @@ namespace OracleMixedTool.Services
         private static readonly object lockError = new();
         private static readonly object lockLogs = new();
         private static readonly object lockInfo = new();
+        private static readonly object lockSSH = new();
+        private static readonly object lockPassword = new();
+
+        public static string ReadPasswordFromFile()
+        {
+            lock (lockPassword)
+            {
+                try
+                {
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "newpassword.dat");
+                    using var reader = new StreamReader(filename, false);
+                    var value = reader.ReadToEnd();
+                    reader.Close();
+                    return value;
+                }
+                catch { return string.Empty; }
+            }
+        }
+
+        public static void SavePasswordToFile(string newPassword)
+        {
+            lock (lockPassword)
+            {
+                try
+                {
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "newpassword.dat");
+                    using var writer = new StreamWriter(filename, false);
+                    writer.Write(newPassword);
+                    writer.Flush();
+                    writer.Close();
+                }
+                catch { }
+            }
+        }
+
+        public static string ReadSSHFromFile()
+        {
+            lock (lockSSH)
+            {
+                try
+                {
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ssh.dat");
+                    using var reader = new StreamReader(filename, false);
+                    var value = reader.ReadToEnd();
+                    reader.Close();
+                    return value;
+                }
+                catch { return string.Empty; }
+            }
+        }
+
+        public static void SaveSSHToFile(string ssh)
+        {
+            lock (lockSSH)
+            {
+                try
+                {
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ssh.dat");
+                    using var writer = new StreamWriter(filename, false);
+                    writer.Write(ssh);
+                    writer.Flush();
+                    writer.Close();
+                }
+                catch { }
+            }
+        }
 
         public static void WriteLastInfo(int scanned, string fileName)
         {
@@ -29,6 +95,7 @@ namespace OracleMixedTool.Services
             }
         }
 
+        //email:pass:delete:ip1;ip2:reboot:ip1;ip2:create:VPS-1:1
         public static Queue<Account> ReadDataFile(string path)
         {
             lock (lockData)
@@ -46,11 +113,41 @@ namespace OracleMixedTool.Services
                             var acc = new Account
                             {
                                 Email = info[0],
-                                Password = info[1]
+                                Password = info[1],
+                                CurrentPassword = info[1]
                             };
+                            for (var index = 2; index < info.Length; index++)
+                            {
+                                switch (info[index].ToLower())
+                                {
+                                    case "delete":
+                                        if (string.IsNullOrWhiteSpace(info[index + 1])) continue;
+                                        var tobeDelete = info[index + 1].Split(";").Select(ip => ip.Trim())
+                                            .Distinct().ToList();
+                                        tobeDelete.Remove("");
+                                        acc.ToBeDeleteInstances.AddRange(tobeDelete);
+                                        break;
+                                    case "reboot":
+                                        if (string.IsNullOrWhiteSpace(info[index + 1])) continue;
+                                        var tobeReboot = info[index + 1].Split(";").Select(ip => ip.Trim())
+                                            .Distinct().ToList();
+                                        tobeReboot.Remove("");
+                                        acc.ToBeRebootInstances.AddRange(info[index + 1].Split(";"));
+                                        break;
+                                    case "create":
+                                        if (string.IsNullOrWhiteSpace(info[index + 1])) continue;
+                                        acc.ToBeCreateInstance = info[index + 1];
+                                        acc.Image = Enum.Parse<ImgType>(info[index + 2]);
+                                        break;
+                                    default: break;
+                                }
+                            }
                             data.Enqueue(acc);
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            WriteLog("[ReadDataFile]", new Exception($"{line}: {ex.Message}."));
+                        }
                         line = reader.ReadLine();
                     }
                     reader.Close();
@@ -96,24 +193,31 @@ namespace OracleMixedTool.Services
                 try
                 {
                     var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    var directoryPath = $"{basePath}/output";
-                    var subDirectoryPath = $"{basePath}/output/success";
+                    var directoryPath = Path.Combine(basePath, "output");
+                    var subDirectoryPath = Path.Combine(basePath, "output", "success");
 
                     var fileName = $"{DateTime.Now:ddMMyyyy}success.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
-                    using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
+                    using var writer = new StreamWriter(Path.Combine(subDirectoryPath, fileName), true);
+
                     writer.WriteLine("Email: " + acc.Email);
                     writer.WriteLine("Password: " + acc.CurrentPassword);
                     writer.WriteLine("New Password: " + acc.NewPassword);
+
                     writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
                     writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
                     writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
 
-                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
-                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
-                    writer.WriteLine("Instances: " + string.Join(";", acc.CurrentInstances));
+                    writer.WriteLine("Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+                    writer.WriteLine("Instances:");
+                    foreach (var instance in acc.CurrentInstances)
+                    {
+                        writer.WriteLine(instance);
+                    }
+                    writer.WriteLine("===========================================");
                     writer.Flush();
                     writer.Close();
                 }
@@ -131,16 +235,39 @@ namespace OracleMixedTool.Services
                 try
                 {
                     var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    var directoryPath = $"{basePath}/output";
-                    var subDirectoryPath = $"{basePath}/output/error";
+                    var directoryPath = Path.Combine(basePath, "output");
+                    var subDirectoryPath = Path.Combine(basePath, "output", "error");
 
                     var fileName = $"{DateTime.Now:ddMMyyyy}error.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
-                    using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}:{reason}";
-                    writer.WriteLine(data);
+                    using var writer = new StreamWriter(Path.Combine(subDirectoryPath, fileName), true);
+
+                    writer.WriteLine("Email: " + acc.Email);
+                    writer.WriteLine("Password: " + acc.CurrentPassword);
+                    writer.WriteLine("New Password: " + acc.NewPassword);
+
+                    writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
+                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+
+                    writer.WriteLine("Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+                    writer.WriteLine("Instances:");
+                    foreach (var instance in acc.CurrentInstances)
+                    {
+                        writer.WriteLine(instance);
+                    }
+
+                    writer.WriteLine("Errors:");
+                    writer.WriteLine(reason);
+                    foreach (var error in acc.Errors)
+                    {
+                        writer.WriteLine(error);
+                    }
+                    writer.WriteLine("===========================================");
+
                     writer.Flush();
                     writer.Close();
                 }
@@ -158,16 +285,37 @@ namespace OracleMixedTool.Services
                 try
                 {
                     var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    var directoryPath = $"{basePath}/output";
-                    var subDirectoryPath = $"{basePath}/output/failed";
+                    var directoryPath = Path.Combine(basePath, "output");
+                    var subDirectoryPath = Path.Combine(basePath, "output", "failed");
 
                     var fileName = $"{DateTime.Now:ddMMyyyy}failed.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
-                    using var writer = new StreamWriter($"{subDirectoryPath}/{fileName}", true);
-                    var data = $"{acc.Email}:{acc.Password}:{acc.NewPassword}:{reason}";
-                    writer.WriteLine(data);
+                    using var writer = new StreamWriter(Path.Combine(subDirectoryPath, fileName), true);
+                    writer.WriteLine("Email: " + acc.Email);
+                    writer.WriteLine("Password: " + acc.CurrentPassword);
+                    writer.WriteLine("New Password: " + acc.NewPassword);
+
+                    writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
+                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+
+                    writer.WriteLine("Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+                    writer.WriteLine("Instances:");
+                    foreach (var instance in acc.CurrentInstances)
+                    {
+                        writer.WriteLine(instance);
+                    }
+
+                    writer.WriteLine("Errors:");
+                    writer.WriteLine(reason);
+                    foreach (var error in acc.Errors)
+                    {
+                        writer.WriteLine(error);
+                    }
+                    writer.WriteLine("===========================================");
                     writer.Flush();
                     writer.Close();
                 }
@@ -192,11 +340,11 @@ namespace OracleMixedTool.Services
             try
             {
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                var directoryPath = $"{basePath}/logs";
+                var directoryPath = Path.Combine(basePath, "logs");
                 var fileName = $"{DateTime.Now:ddMMyyyy}simplelog.txt";
                 if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
 
-                using var writer = new StreamWriter($"{directoryPath}/{fileName}", true);
+                using var writer = new StreamWriter(Path.Combine(directoryPath, fileName), true);
                 writer.WriteLine($"{DateTime.Now:HH:mm:ss} {prefix} {data}");
                 writer.Flush();
                 writer.Close();
@@ -209,11 +357,11 @@ namespace OracleMixedTool.Services
             try
             {
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
-                var directoryPath = $"{basePath}/logs";
+                var directoryPath = Path.Combine(basePath, "logs");
                 var fileName = $"{DateTime.Now:ddMMyyyy}log.txt";
                 if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
 
-                using var writer = new StreamWriter($"{directoryPath}/{fileName}", true);
+                using var writer = new StreamWriter(Path.Combine(directoryPath, fileName), true);
                 writer.WriteLine($"{DateTime.Now:HH:mm:ss} {prefix} {data}");
                 writer.Flush();
                 writer.Close();

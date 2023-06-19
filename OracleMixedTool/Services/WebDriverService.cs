@@ -210,12 +210,12 @@ namespace OracleMixedTool.Services
             }
             finally
             {
-                await Task.Delay(DefaultWaitChangePass, token);
+                await Task.Delay(DefaultWaitChangePass * 1000, token);
             }
         }
 
         #region delete or reboot or create instance
-        public static async Task<Tuple<bool, string>> DeleteRebootAndCreate(UndetectedChromeDriver driver, Account account, string ssh, CancellationToken token)
+        public static async Task DeleteRebootAndCreate(UndetectedChromeDriver driver, Account account, string ssh, CancellationToken token)
         {
             var step = "GoToURL";
             try
@@ -236,36 +236,37 @@ namespace OracleMixedTool.Services
                 await Task.Delay(3000, token);
                 driver.Click(@"[title*=""(root)""]", DefaultTimeout, token);
 
-                await Task.Delay(DefaultTimeout * 1000 / 2, token);
-
                 step = "waitTable";
                 _ = driver.FindElement(@"[role=""table""]", DefaultTimeout, token);
-                await Task.Delay(3000, token);
 
-                step = "instancesElm";
-                var instancesElm = driver.FindElements(By.CssSelector("table tbody tr"));
+                await Task.Delay(DefaultTimeout * 1000 / 2, token);
 
-                foreach (var instanceElm in instancesElm)
+                if (account.ToBeDeleteInstances.Any() || account.ToBeRebootInstances.Any())
                 {
-                    token.ThrowIfCancellationRequested();
-                    await HandleDeleteOrReboot(driver, account, instanceElm, token);
-                }
+                    step = "instancesElm";
+                    var instancesElm = driver.FindElements(By.CssSelector("table tbody tr"));
 
-                if (account.ToBeDeleteInstances.Count > 0) await Task.Delay(DefaultWaitDelete, token);
-                else if (account.ToBeRebootInstances.Count > 0) await Task.Delay(DefaultWaitReboot, token);
+                    foreach (var instanceElm in instancesElm)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        await HandleDeleteOrReboot(driver, account, instanceElm, token);
+                    }
+
+                    if (account.ToBeDeleteInstances.Count > 0) await Task.Delay(DefaultWaitDelete * 1000, token);
+                    else if (account.ToBeRebootInstances.Count > 0) await Task.Delay(DefaultWaitReboot * 1000, token);
+                }
 
                 if (!string.IsNullOrEmpty(account.ToBeCreateInstance))
                 {
                     step = "createInstance";
                     await HandleCreateInstance(driver, account, ssh, token);
-                    await Task.Delay(DefaultWaitCreateNew, token);
+                    await Task.Delay(DefaultWaitCreateNew * 1000, token);
                 }
-                return Tuple.Create(true, string.Empty);
             }
             catch (Exception ex)
             {
                 DataHandler.WriteLog($"[DeleteAndReboot] {step}", ex);
-                return Tuple.Create(false, $"[DeleteAndReboot] {step} {ex.Message}");
+                account.Errors.Add($"[DeleteAndReboot] {step} {ex.Message}");
             }
         }
 
@@ -583,7 +584,7 @@ namespace OracleMixedTool.Services
         }
         #endregion
 
-        public static async Task<Tuple<bool, string>> CaptureInstance(UndetectedChromeDriver driver, Account account, CancellationToken token)
+        public static async Task CaptureInstance(UndetectedChromeDriver driver, Account account, CancellationToken token)
         {
             var step = "GoToURL";
             try
@@ -608,12 +609,11 @@ namespace OracleMixedTool.Services
                     var details = content.Replace("\r\n\t\r\n", "|").Replace("\r\n\t", "").Replace("\n", " ");
                     account.CurrentInstances.Add(details);
                 }
-                return Tuple.Create(true, string.Empty);
             }
             catch (Exception ex)
             {
                 DataHandler.WriteLog($"[CaptureInstance] {step}", ex);
-                return Tuple.Create(false, $"[CaptureInstance] {step} {ex.Message}");
+                account.Errors.Add($"[CaptureInstance] {step} {ex.Message}");
             }
         }
     }

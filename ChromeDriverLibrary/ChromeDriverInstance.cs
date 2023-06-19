@@ -10,6 +10,7 @@ namespace ChromeDriverLibrary
 
         public static Tuple<UndetectedChromeDriver?, string> GetInstance(int positionX, 
             int positionY,
+            bool isMaximize = false,
             string? proxy = null, 
             bool isHeadless = true,
             List<string>? extensionPaths = null, 
@@ -62,8 +63,15 @@ namespace ChromeDriverLibrary
                     headless: isHeadless,
                     hideCommandPromptWindow: true,
                     options: options);
-                driver.Manage().Window.Position = new System.Drawing.Point(positionX, positionY);
-                driver.Manage().Window.Size = new System.Drawing.Size(375, 500);
+                if (!isMaximize)
+                {
+                    driver.Manage().Window.Position = new System.Drawing.Point(positionX, positionY);
+                    driver.Manage().Window.Size = new System.Drawing.Size(375, 500);
+                }
+                else
+                {
+                    driver.Manage().Window.Maximize();
+                }
                 Thread.Sleep(3000);
                 while (driver.WindowHandles.Count > 1)
                 {
