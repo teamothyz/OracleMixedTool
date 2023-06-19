@@ -41,12 +41,32 @@ namespace ChromeDriverLibrary
             }, token);
         }
 
-        public static void Click(this UndetectedChromeDriver driver, IWebElement element, int timeout, CancellationToken token)
+        public static void Click(this UndetectedChromeDriver driver, string selector, int timeout, CancellationToken token)
+        {
+            var waiter = GetWaiter(driver, timeout);
+            waiter.Until(webdriver =>
+            {
+                driver.FindElement(By.CssSelector(selector)).Click();
+                return true;
+            }, token);
+        }
+
+        public static void Click(this IWebElement element, UndetectedChromeDriver driver, int timeout, CancellationToken token)
         {
             var waiter = GetWaiter(driver, timeout);
             waiter.Until(webdriver =>
             {
                 element.Click();
+                return true;
+            }, token);
+        }
+
+        public static void ClickByJS(this UndetectedChromeDriver driver, string selector, int timeout, CancellationToken token)
+        {
+            var waiter = GetWaiter(driver, timeout);
+            waiter.Until(webdriver =>
+            {
+                driver.ExecuteScript("arguments[0].click();", driver.FindElement(By.CssSelector(selector)));
                 return true;
             }, token);
         }
@@ -58,6 +78,17 @@ namespace ChromeDriverLibrary
             {
                 return driver.SwitchTo().Alert();
             }, token);
+        }
+
+        public static void ClearContentManually(this IWebElement element, int timeout, CancellationToken token)
+        {
+            var endTime = DateTime.Now.AddSeconds(timeout);
+            while (element.GetAttribute("value") != "")
+            {
+                element.SendKeys(Keys.Backspace);
+                if (DateTime.Now >= endTime) break;
+                Thread.Sleep(200);
+            }
         }
 
         private static bool CompareContent(UndetectedChromeDriver driver, IWebElement element, string content)
