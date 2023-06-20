@@ -295,7 +295,7 @@ namespace OracleMixedTool.Services
                 await HandleSSHKey(driver, ssh, token);
 
                 step = "HandleBootVolumeSize";
-                await HandleBootVolumeSize(driver, token);
+                await HandleBootVolumeSize(driver, account, token);
 
                 step = "confirmCreateBtn";
                 await Task.Delay(2000, token);
@@ -311,7 +311,7 @@ namespace OracleMixedTool.Services
             }
         }
 
-        private static async Task HandleBootVolumeSize(UndetectedChromeDriver driver, CancellationToken token)
+        private static async Task HandleBootVolumeSize(UndetectedChromeDriver driver, Account account, CancellationToken token)
         {
             var step = string.Empty;
             try
@@ -343,17 +343,24 @@ namespace OracleMixedTool.Services
                     driver.Click(@"[name=""enableInTransitEncryption""]", DefaultTimeout, token);
                 }
 
-                step = "migrationsBtn";
-                var migrationsBtn = driver.FindElement(@"[name=""isLiveMigrationPreferred""]", DefaultTimeout, token);
-                await Task.Delay(2000, token);
-                driver.Click(@"[name=""isLiveMigrationPreferred""]", DefaultTimeout, token);
-
-                await Task.Delay(3000, token);
-                var isChecked = (bool)driver.ExecuteScript("return arguments[0].checked;", migrationsBtn);
-                if (isChecked)
+                try
                 {
-                    step = "reClickMigrationsBtn";
+                    step = "migrationsBtn";
+                    var migrationsBtn = driver.FindElement(@"[name=""isLiveMigrationPreferred""]", DefaultTimeout, token);
+                    await Task.Delay(2000, token);
                     driver.Click(@"[name=""isLiveMigrationPreferred""]", DefaultTimeout, token);
+
+                    await Task.Delay(3000, token);
+                    var isChecked = (bool)driver.ExecuteScript("return arguments[0].checked;", migrationsBtn);
+                    if (isChecked)
+                    {
+                        step = "reClickMigrationsBtn";
+                        driver.Click(@"[name=""isLiveMigrationPreferred""]", DefaultTimeout, token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DataHandler.WriteLog($"[HandleBootVolumeSize] {step}", ex);
                 }
             }
             catch (Exception ex)
