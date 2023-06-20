@@ -20,6 +20,8 @@
 
         public ImgType Image { get; set; } = ImgType.Ampere;
 
+        public string OriginalData { get; set; } = null!;
+
         #region Logs work
         public List<string> DeletedInstances { get; set; } = new();
 

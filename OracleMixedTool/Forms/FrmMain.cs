@@ -18,6 +18,7 @@ namespace OracleMixedTool.Forms
         private bool _privateMode = false;
         private bool _disableImg = true;
         private bool _useProxy = false;
+        private bool _capture = true;
 
         private string _proxyPrefix = string.Empty;
 
@@ -208,7 +209,7 @@ namespace OracleMixedTool.Forms
                     }
                     if (account == null) return;
                     account.NewPassword = NewpassTxtBox.Text;
-                    var driverInfo = await Task.Run(() => ChromeDriverInstance.GetInstance(positionX: positionX, 
+                    var driverInfo = await Task.Run(() => ChromeDriverInstance.GetInstance(positionX: positionX,
                         positionY: positionY, isMaximize: true,
                         proxy: proxy, isHeadless: _isHeadless, extensionPaths: _extensionPaths,
                         disableImg: _disableImg, privateMode: _privateMode, token: token), token);
@@ -232,7 +233,7 @@ namespace OracleMixedTool.Forms
                 DataHandler.WriteLog("[RunThread]", ex);
                 if (completed == false && account != null)
                 {
-                    DataHandler.WriteErrorData(account, "failed caused by cancel");
+                    DataHandler.WriteFailedData(account, _lastFileName, "failed caused by cancel");
                     HandleFailed();
                 }
             }
@@ -246,7 +247,7 @@ namespace OracleMixedTool.Forms
                 if (!checkTenantRs.Item1)
                 {
                     HandleFailed();
-                    DataHandler.WriteErrorData(account, checkTenantRs.Item2);
+                    DataHandler.WriteFailedData(account, _lastFileName, checkTenantRs.Item2);
                     return;
                 }
 
@@ -257,26 +258,29 @@ namespace OracleMixedTool.Forms
                     if (!mustChangeRs.Item1)
                     {
                         HandleFailed();
-                        DataHandler.WriteFailedData(account, mustChangeRs.Item2);
+                        DataHandler.WriteFailedData(account, _lastFileName, mustChangeRs.Item2);
                         return;
                     }
                     var changePassRs = await WebDriverService.ChangePassword(driver, loginRs.Item3, account, token);
                     if (!mustChangeRs.Item1)
                     {
                         HandleFailed();
-                        DataHandler.WriteFailedData(account, changePassRs.Item2);
+                        DataHandler.WriteFailedData(account, _lastFileName, changePassRs.Item2);
                         return;
                     }
                 }
                 if (!loginRs.Item1)
                 {
                     HandleFailed();
-                    DataHandler.WriteFailedData(account, loginRs.Item2);
+                    DataHandler.WriteFailedData(account, _lastFileName, loginRs.Item2);
                     return;
                 }
 
                 await WebDriverService.DeleteRebootAndCreate(driver, account, SSHKeyTxtBox.Text, token);
-                await WebDriverService.CaptureInstance(driver, account, token);
+                if (_capture)
+                {
+                    await WebDriverService.CaptureInstance(driver, account, token);
+                }
                 if (account.Errors.Count == 0)
                 {
                     HandleSuccess();
@@ -285,14 +289,14 @@ namespace OracleMixedTool.Forms
                 else
                 {
                     HandleFailed();
-                    DataHandler.WriteErrorData(account, checkTenantRs.Item2);
+                    DataHandler.WriteFailedData(account, _lastFileName, checkTenantRs.Item2);
                 }
             }
             catch (Exception ex)
             {
 
                 DataHandler.WriteLog("[HandleAccount]", ex);
-                DataHandler.WriteErrorData(account, ex.Message);
+                DataHandler.WriteFailedData(account, _lastFileName, ex.Message);
             }
             finally { await ChromeDriverInstance.Close(driver, userDir); }
         }
@@ -474,6 +478,11 @@ namespace OracleMixedTool.Forms
                 SSHKeyTxtBox.ReadOnly = isRun;
                 StopBtn.Enabled = isRun;
             });
+        }
+
+        private void CaptureInstanceCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            _capture = CaptureInstanceCheckBox.Checked;
         }
     }
 }

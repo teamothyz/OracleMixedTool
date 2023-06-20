@@ -142,6 +142,7 @@ namespace OracleMixedTool.Services
                                     default: break;
                                 }
                             }
+                            acc.OriginalData = line;
                             data.Enqueue(acc);
                         }
                         catch (Exception ex)
@@ -228,7 +229,7 @@ namespace OracleMixedTool.Services
             }
         }
 
-        public static void WriteErrorData(Account acc, string reason)
+        private static void WriteErrorData(Account acc, string originalFilename, string reason)
         {
             lock (lockError)
             {
@@ -278,7 +279,7 @@ namespace OracleMixedTool.Services
             }
         }
 
-        public static void WriteFailedData(Account acc, string reason)
+        public static void WriteFailedData(Account acc, string originalFilename, string reason)
         {
             lock (lockFailed)
             {
@@ -288,34 +289,12 @@ namespace OracleMixedTool.Services
                     var directoryPath = Path.Combine(basePath, "output");
                     var subDirectoryPath = Path.Combine(basePath, "output", "failed");
 
-                    var fileName = $"{DateTime.Now:ddMMyyyy}failed.txt";
+                    var fileName = $"{DateTime.Now:ddMMyyyy}failed-{originalFilename}.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
                     using var writer = new StreamWriter(Path.Combine(subDirectoryPath, fileName), true);
-                    writer.WriteLine("Email: " + acc.Email);
-                    writer.WriteLine("Password: " + acc.CurrentPassword);
-                    writer.WriteLine("New Password: " + acc.NewPassword);
-
-                    writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
-                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
-                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
-
-                    writer.WriteLine("Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
-                    writer.WriteLine("Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
-                    writer.WriteLine("Instances:");
-                    foreach (var instance in acc.CurrentInstances)
-                    {
-                        writer.WriteLine(instance);
-                    }
-
-                    writer.WriteLine("Errors:");
-                    writer.WriteLine(reason);
-                    foreach (var error in acc.Errors)
-                    {
-                        writer.WriteLine(error);
-                    }
-                    writer.WriteLine("===========================================");
+                    writer.WriteLine(acc.OriginalData);
                     writer.Flush();
                     writer.Close();
                 }
@@ -324,6 +303,7 @@ namespace OracleMixedTool.Services
                     WriteLog("[WriteFailedData]", ex);
                 }
             }
+            WriteErrorData(acc, originalFilename, reason);
         }
 
         public static void WriteLog(string prefix, Exception ex)

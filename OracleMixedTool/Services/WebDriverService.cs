@@ -462,7 +462,7 @@ namespace OracleMixedTool.Services
             {
                 step = "networkEditBtn";
                 await Task.Delay(2000, token);
-                driver.Click(@"[data-test-id=""network-fieldset""] button", DefaultTimeout, token);
+                driver.ClickByJS(@"[data-test-id=""network-fieldset""] button", DefaultTimeout, token);
 
                 bool needCreate;
                 try
