@@ -91,7 +91,7 @@ namespace ChromeDriverLibrary
             }
         }
 
-        private static bool CompareContent(UndetectedChromeDriver driver, IWebElement element, string content)
+        public static bool CompareContent(UndetectedChromeDriver driver, IWebElement element, string content)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace ChromeDriverLibrary
             return (string)driver.ExecuteScript("return arguments[0].innerText;", element);
         }
 
-        private static WebDriverWait GetWaiter(UndetectedChromeDriver driver, int timeout)
+        public static WebDriverWait GetWaiter(UndetectedChromeDriver driver, int timeout)
         {
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException),

@@ -7,6 +7,8 @@ namespace OracleMixedTool.Forms
 {
     public partial class FrmMain : Form
     {
+        public static bool ClickCookie { get; private set; } = false;
+
         private int _totalThreads = 20;
         private Queue<Account> _accounts = new();
         private List<string> _proxies = new();
@@ -261,8 +263,11 @@ namespace OracleMixedTool.Forms
                         DataHandler.WriteFailedData(account, _lastFileName, mustChangeRs.Item2);
                         return;
                     }
+                }
+                if (loginRs.Item2 == "pwdmustchange" || ChangePassCheckBox.Checked)
+                {
                     var changePassRs = await WebDriverService.ChangePassword(driver, loginRs.Item3, account, token);
-                    if (!mustChangeRs.Item1)
+                    if (!changePassRs.Item1)
                     {
                         HandleFailed();
                         DataHandler.WriteFailedData(account, _lastFileName, changePassRs.Item2);
@@ -474,6 +479,9 @@ namespace OracleMixedTool.Forms
                 DelayCreateUpdown.Enabled = !isRun;
                 StartFromUpdown.Enabled = !isRun;
 
+                ClickCookieCheckBox.Enabled = !isRun;
+                ChangePassCheckBox.Enabled = !isRun;
+
                 NewpassTxtBox.ReadOnly = isRun;
                 SSHKeyTxtBox.ReadOnly = isRun;
                 StopBtn.Enabled = isRun;
@@ -483,6 +491,11 @@ namespace OracleMixedTool.Forms
         private void CaptureInstanceCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             _capture = CaptureInstanceCheckBox.Checked;
+        }
+
+        private void ClickCookieCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ClickCookie = ClickCookieCheckBox.Checked;
         }
     }
 }

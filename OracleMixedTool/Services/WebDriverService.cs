@@ -1,6 +1,7 @@
 ﻿using ChromeDriverLibrary;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using OracleMixedTool.Forms;
 using OracleMixedTool.Models;
 using SeleniumUndetectedChromeDriver;
 
@@ -24,7 +25,7 @@ namespace OracleMixedTool.Services
 
                 step = "HandleCookieAccept";
                 await HandleCookieAccept(driver, token);
-                await Task.Delay(DefaultTimeout * 1000, token);
+                await Task.Delay(DefaultTimeout * 500, token);
 
                 if (driver.Url.Contains("oraclecloud.com/v1/oauth2/authorize"))
                 {
@@ -50,6 +51,7 @@ namespace OracleMixedTool.Services
         {
             try
             {
+                if (!FrmMain.ClickCookie) return;
                 var iframe = driver.FindElement(@"iframe[name=""trustarc_cm""]", DefaultTimeout, token);
                 driver.SwitchTo().Frame(iframe);
                 await Task.Delay(3000, token);
@@ -508,16 +510,35 @@ namespace OracleMixedTool.Services
                 await Task.Delay(2000, token);
                 driver.Click(@"[id=""oui-radio-ssh-key-from-textarea""]", DefaultTimeout, token);
 
-                step = "sshInputElm";
-                var sshInputElm = driver.FindElement(@"[name=""sshKey""]", DefaultTimeout, token);
-                await Task.Delay(2000, token);
-                driver.Sendkeys(sshInputElm, key, true, DefaultTimeout, token);
+                Paste(driver, @"[name=""sshKey""]", key, true, DefaultTimeout, token);
             }
             catch (Exception ex)
             {
                 DataHandler.WriteLog($"[HandleSSHKey] {step}", ex);
                 throw;
             }
+        }
+
+        public static void Paste(UndetectedChromeDriver driver, string selector, string content, bool needCompare, int timeout, CancellationToken token)
+        {
+            var waiter = ChromeDriverExtension.GetWaiter(driver, timeout);
+            waiter.Until(webdriver =>
+            {
+                var element = driver.FindElement(By.CssSelector(selector));
+                try
+                {
+                    element.Click();
+                    Thread.Sleep(500);
+                    element.Clear();
+                    Thread.Sleep(500);
+                }
+                catch { }
+                Clipboard.SetText(content);
+                element.SendKeys(OpenQA.Selenium.Keys.Control + "v");
+                Thread.Sleep(500);
+                if (!needCompare) return true;
+                return ChromeDriverExtension.CompareContent(driver, element, content);
+            }, token);
         }
 
         private static async Task HandleDeleteOrReboot(UndetectedChromeDriver driver, Account account, IWebElement element, CancellationToken token)
