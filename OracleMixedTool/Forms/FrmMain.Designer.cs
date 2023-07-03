@@ -325,6 +325,7 @@
             0,
             0,
             0});
+            this.TimeoutUpdown.ValueChanged += new System.EventHandler(this.TimeoutUpdown_ValueChanged);
             // 
             // DelayChangePassUpdown
             // 
@@ -344,6 +345,7 @@
             0,
             0,
             0});
+            this.DelayChangePassUpdown.ValueChanged += new System.EventHandler(this.DelayChangePassUpdown_ValueChanged);
             // 
             // DelayDeleteUpdown
             // 
@@ -363,6 +365,7 @@
             0,
             0,
             0});
+            this.DelayDeleteUpdown.ValueChanged += new System.EventHandler(this.DelayDeleteUpdown_ValueChanged);
             // 
             // DelayRebootUpdown
             // 
@@ -382,6 +385,7 @@
             0,
             0,
             0});
+            this.DelayRebootUpdown.ValueChanged += new System.EventHandler(this.DelayRebootUpdown_ValueChanged);
             // 
             // DelayCreateUpdown
             // 
@@ -401,6 +405,7 @@
             0,
             0,
             0});
+            this.DelayCreateUpdown.ValueChanged += new System.EventHandler(this.DelayCreateUpdown_ValueChanged);
             // 
             // StartFromUpdown
             // 
@@ -429,6 +434,7 @@
             this.InputFileBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.InputFileBtn.TabIndex = 27;
             this.InputFileBtn.Values.Text = "File dữ liệu";
+            this.InputFileBtn.Click += new System.EventHandler(this.InputFileBtn_Click);
             // 
             // InputProxyBtn
             // 
@@ -443,6 +449,7 @@
             this.InputProxyBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.InputProxyBtn.TabIndex = 28;
             this.InputProxyBtn.Values.Text = "File Proxy";
+            this.InputProxyBtn.Click += new System.EventHandler(this.InputProxyBtn_Click);
             // 
             // LoadExtensionsBtn
             // 
@@ -457,6 +464,7 @@
             this.LoadExtensionsBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.LoadExtensionsBtn.TabIndex = 29;
             this.LoadExtensionsBtn.Values.Text = "Load Extensions";
+            this.LoadExtensionsBtn.Click += new System.EventHandler(this.LoadExtensionsBtn_Click);
             // 
             // ClearExtensionsBtn
             // 
@@ -471,6 +479,7 @@
             this.ClearExtensionsBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ClearExtensionsBtn.TabIndex = 30;
             this.ClearExtensionsBtn.Values.Text = "Clear Extension";
+            this.ClearExtensionsBtn.Click += new System.EventHandler(this.ClearExtensionsBtn_Click);
             // 
             // AddExtensionBtn
             // 
@@ -485,6 +494,7 @@
             this.AddExtensionBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.AddExtensionBtn.TabIndex = 31;
             this.AddExtensionBtn.Values.Text = "Thêm Extension";
+            this.AddExtensionBtn.Click += new System.EventHandler(this.AddExtensionBtn_Click);
             // 
             // ForceStopBtn
             // 
@@ -499,6 +509,7 @@
             this.ForceStopBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ForceStopBtn.TabIndex = 32;
             this.ForceStopBtn.Values.Text = "Dừng ngay";
+            this.ForceStopBtn.Click += new System.EventHandler(this.ForceStopBtn_Click);
             // 
             // StopBtn
             // 
@@ -514,6 +525,7 @@
             this.StopBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.StopBtn.TabIndex = 33;
             this.StopBtn.Values.Text = "Dừng lại";
+            this.StopBtn.Click += new System.EventHandler(this.StopBtn_Click);
             // 
             // StartBtn
             // 
@@ -528,6 +540,7 @@
             this.StartBtn.StateCommon.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.StartBtn.TabIndex = 34;
             this.StartBtn.Values.Text = "Bắt đầu";
+            this.StartBtn.Click += new System.EventHandler(this.StartBtn_Click);
             // 
             // HeadlessCheckBox
             // 
@@ -541,6 +554,7 @@
             this.HeadlessCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.HeadlessCheckBox.TabIndex = 35;
             this.HeadlessCheckBox.Values.Text = "Ẩn Chrome";
+            this.HeadlessCheckBox.CheckedChanged += new System.EventHandler(this.HeadlessCheckBox_CheckedChanged);
             // 
             // TopmostCheckBox
             // 
@@ -554,6 +568,7 @@
             this.TopmostCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.TopmostCheckBox.TabIndex = 36;
             this.TopmostCheckBox.Values.Text = "Top Most";
+            this.TopmostCheckBox.CheckedChanged += new System.EventHandler(this.TopmostCheckBox_CheckedChanged);
             // 
             // PrivateModeCheckBox
             // 
@@ -565,6 +580,7 @@
             this.PrivateModeCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.PrivateModeCheckBox.TabIndex = 37;
             this.PrivateModeCheckBox.Values.Text = "Ẩn danh";
+            this.PrivateModeCheckBox.CheckedChanged += new System.EventHandler(this.PrivateModeCheckBox_CheckedChanged);
             // 
             // DisableImgCheckBox
             // 
@@ -578,6 +594,7 @@
             this.DisableImgCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.DisableImgCheckBox.TabIndex = 38;
             this.DisableImgCheckBox.Values.Text = "Disable Image";
+            this.DisableImgCheckBox.CheckedChanged += new System.EventHandler(this.DisableImgCheckBox_CheckedChanged);
             // 
             // label6
             // 
@@ -613,6 +630,7 @@
             0,
             0,
             0});
+            this.ThreadNumberUpdown.ValueChanged += new System.EventHandler(this.ThreadNumberUpdown_ValueChanged);
             // 
             // label15
             // 
@@ -678,6 +696,7 @@
             this.ProxyComboBox.StateCommon.Item.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ProxyComboBox.TabIndex = 45;
             this.ProxyComboBox.Text = "Proxy Type";
+            this.ProxyComboBox.SelectedIndexChanged += new System.EventHandler(this.ProxyComboBox_SelectedIndexChanged);
             // 
             // CaptureInstanceCheckBox
             // 
@@ -691,6 +710,7 @@
             this.CaptureInstanceCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.CaptureInstanceCheckBox.TabIndex = 46;
             this.CaptureInstanceCheckBox.Values.Text = "Capture Instances";
+            this.CaptureInstanceCheckBox.CheckedChanged += new System.EventHandler(this.CaptureInstanceCheckBox_CheckedChanged);
             // 
             // ClickCookieCheckBox
             // 
