@@ -9,6 +9,7 @@ namespace OracleMixedTool.Services
 {
     public class WebDriverService
     {
+        private static readonly object _lockClipboard = new();
         public static int DefaultTimeout { get; set; } = 30;
         public static int DefaultWaitChangePass { get; set; } = 5;
         public static int DefaultWaitDelete { get; set; } = 60;
@@ -508,7 +509,7 @@ namespace OracleMixedTool.Services
             {
                 step = "sshElm";
                 await Task.Delay(2000, token);
-                driver.Click(@"[id=""oui-radio-ssh-key-from-textarea""]", DefaultTimeout, token);
+                driver.ClickByJS(@"[id=""oui-radio-ssh-key-from-textarea""]", DefaultTimeout, token);
 
                 Paste(driver, @"[name=""sshKey""]", key, true, DefaultTimeout, token);
             }
@@ -533,9 +534,12 @@ namespace OracleMixedTool.Services
                     Thread.Sleep(500);
                 }
                 catch { }
-                Clipboard.SetText(content);
-                element.SendKeys(OpenQA.Selenium.Keys.Control + "v");
-                Thread.Sleep(500);
+                lock (_lockClipboard)
+                {
+                    FrmMain.Instance.SetClipboard(content);
+                    element.SendKeys(OpenQA.Selenium.Keys.Control + "v");
+                    Thread.Sleep(500);
+                }
                 if (!needCompare) return true;
                 return ChromeDriverExtension.CompareContent(driver, element, content);
             }, token);

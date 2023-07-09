@@ -7,6 +7,8 @@ namespace OracleMixedTool.Forms
 {
     public partial class FrmMain : Form
     {
+        public static FrmMain Instance { get; private set; } = null!;
+
         public static bool ClickCookie { get; private set; } = false;
 
         private int _totalThreads = 20;
@@ -48,6 +50,12 @@ namespace OracleMixedTool.Forms
             NewpassTxtBox.Text = DataHandler.ReadPasswordFromFile();
             SSHKeyTxtBox.Text = DataHandler.ReadSSHFromFile();
             ActiveControl = label1;
+            Instance = this;
+        }
+
+        public void SetClipboard(string content)
+        {
+            Invoke(() => Clipboard.SetText(content));
         }
 
         private async void InputFileBtn_Click(object sender, EventArgs e)
