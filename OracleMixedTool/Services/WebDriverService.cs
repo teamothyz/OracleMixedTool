@@ -31,8 +31,16 @@ namespace OracleMixedTool.Services
                 if (driver.Url.Contains("oraclecloud.com/v1/oauth2/authorize"))
                 {
                     step = "submitFederationBtn";
-                    driver.Click("#submit-federation", DefaultTimeout, token);
-                    await Task.Delay(3000, token);
+                    driver.ClickByJS("#submit-federation", DefaultTimeout, token);
+                    await Task.Delay(1000, token);
+
+                    //retry click
+                    try
+                    {
+                        driver.ExecuteScript("arguments[0].click();",
+                            driver.FindElement(By.CssSelector("#submit-federation")));
+                    }
+                    catch { }
 
                     step = "WaitNextPage";
                     driver.FindElement("#idcs-signin-basic-signin-form-submit > button > div", DefaultTimeout * 2, token);
