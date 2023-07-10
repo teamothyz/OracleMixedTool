@@ -297,7 +297,7 @@ namespace OracleMixedTool.Forms
                 if (account.Errors.Count == 0)
                 {
                     HandleSuccess();
-                    DataHandler.WriteSuccessData(account);
+                    DataHandler.WriteSuccessData(account, _lastFileName);
                 }
                 else
                 {

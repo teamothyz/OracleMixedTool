@@ -13,6 +13,7 @@ namespace OracleMixedTool.Services
         private static readonly object lockInfo = new();
         private static readonly object lockSSH = new();
         private static readonly object lockPassword = new();
+        private static readonly object lockSuccessErr = new();
 
         public static string ReadPasswordFromFile()
         {
@@ -187,7 +188,7 @@ namespace OracleMixedTool.Services
             }
         }
 
-        public static void WriteSuccessData(Account acc)
+        public static void WriteSuccessData(Account acc, string originalFilename)
         {
             lock (lockSuccess)
             {
@@ -197,7 +198,7 @@ namespace OracleMixedTool.Services
                     var directoryPath = Path.Combine(basePath, "output");
                     var subDirectoryPath = Path.Combine(basePath, "output", "success");
 
-                    var fileName = $"{DateTime.Now:ddMMyyyy}success.txt";
+                    var fileName = $"{DateTime.Now:ddMMyyyy}success-{originalFilename}.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
@@ -227,6 +228,7 @@ namespace OracleMixedTool.Services
                     WriteLog("[WriteSuccessData]", ex);
                 }
             }
+            WriteSuccessError(acc, originalFilename, null);
         }
 
         private static void WriteErrorData(Account acc, string originalFilename, string reason)
@@ -239,7 +241,7 @@ namespace OracleMixedTool.Services
                     var directoryPath = Path.Combine(basePath, "output");
                     var subDirectoryPath = Path.Combine(basePath, "output", "error");
 
-                    var fileName = $"{DateTime.Now:ddMMyyyy}error.txt";
+                    var fileName = $"{DateTime.Now:ddMMyyyy}error-{originalFilename}.txt";
                     if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
                     if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
 
@@ -277,6 +279,7 @@ namespace OracleMixedTool.Services
                     WriteLog("[WriteErrorData]", ex);
                 }
             }
+            WriteSuccessError(acc, originalFilename, reason);
         }
 
         public static void WriteFailedData(Account acc, string originalFilename, string reason)
@@ -304,6 +307,63 @@ namespace OracleMixedTool.Services
                 }
             }
             WriteErrorData(acc, originalFilename, reason);
+        }
+
+        private static void WriteSuccessError(Account acc, string originalFilename, string? reason)
+        {
+            lock (lockSuccessErr)
+            {
+                try
+                {
+                    var basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    var directoryPath = Path.Combine(basePath, "output");
+                    var subDirectoryPath = Path.Combine(basePath, "output", "all");
+
+                    var fileName = $"{DateTime.Now:ddMMyyyy}all-{originalFilename}.txt";
+                    if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
+                    if (!Directory.Exists(subDirectoryPath)) Directory.CreateDirectory(subDirectoryPath);
+
+                    using var writer = new StreamWriter(Path.Combine(subDirectoryPath, fileName), true);
+
+                    writer.WriteLine("Email: " + acc.Email);
+                    writer.WriteLine("Password: " + acc.CurrentPassword);
+                    writer.WriteLine("New Password: " + acc.NewPassword);
+
+                    writer.WriteLine("To Be Created: " + acc.ToBeCreateInstance);
+                    writer.WriteLine("To Be Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("To Be Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+
+                    writer.WriteLine("Deleted: " + string.Join(";", acc.ToBeDeleteInstances));
+                    writer.WriteLine("Rebooted: " + string.Join(";", acc.ToBeRebootInstances));
+                    writer.WriteLine("Instances:");
+                    foreach (var instance in acc.CurrentInstances)
+                    {
+                        writer.WriteLine(instance);
+                    }
+
+                    if (reason != null)
+                    {
+                        writer.WriteLine(reason);
+                    }
+                    if (acc.Errors.Any())
+                    {
+                        writer.WriteLine("Errors:");
+                        foreach (var error in acc.Errors)
+                        {
+                            writer.WriteLine(error);
+                        }
+                    }
+
+                    writer.WriteLine("===========================================");
+
+                    writer.Flush();
+                    writer.Close();
+                }
+                catch (Exception ex)
+                {
+                    WriteLog("[WriteSuccessError]", ex);
+                }
+            }
         }
 
         public static void WriteLog(string prefix, Exception ex)
