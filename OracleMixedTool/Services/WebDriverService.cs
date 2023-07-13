@@ -234,24 +234,41 @@ namespace OracleMixedTool.Services
                 driver.GoToUrl("https://cloud.oracle.com/compute/instances");
                 await Task.Delay(DefaultTimeout * 1000 / 2, token);
 
-                step = "iframe";
-                var iframe = driver.FindElement("#sandbox-compute-container", DefaultTimeout, token);
-                await Task.Delay(3000, token);
-                driver.SwitchTo().Frame(iframe);
+                var tryTimes = 0;
+                while (true)
+                {
+                    try
+                    {
+                        step = "iframe";
+                        var iframe = driver.FindElement("#sandbox-compute-container", DefaultTimeout, token);
+                        await Task.Delay(3000, token);
+                        driver.SwitchTo().Frame(iframe);
 
-                step = "compartmentElm";
-                await Task.Delay(3000, token);
-                driver.Click(@"[aria-label=""Compartment""]", DefaultTimeout, token);
+                        var compartmentStatus = driver.FindElement(@"a[id*=""active_compartment_select""]", DefaultTimeout, token).GetAttribute("class");
+                        if (compartmentStatus.Contains("bottom"))
+                        {
+                            step = "compartmentElm";
+                            driver.ScrollTo(@"[aria-label=""Compartment""]", DefaultTimeout, token);
+                            await Task.Delay(1000, token);
+                            driver.ClickByJS(@"a[id*=""active_compartment_select""]", DefaultTimeout, token);
+                        }
 
-                step = "rootElm";
-                await Task.Delay(3000, token);
-                driver.Click(@"[title*=""(root)""]", DefaultTimeout, token);
+                        step = "rootElm";
+                        await Task.Delay(3000, token);
+                        driver.ClickByJS(@"label[title*=""(root)""] span", DefaultTimeout, token);
 
-                step = "waitTable";
-                _ = driver.FindElement(@"[role=""table""]", DefaultTimeout, token);
+                        step = "waitTable";
+                        _ = driver.FindElement(@"[role=""table""]", DefaultTimeout, token);
+                        break;
+                    }
+                    catch
+                    {
+                        tryTimes++;
+                        if (tryTimes == 2) throw;
+                    }
+                }
 
                 await Task.Delay(DefaultTimeout * 1000 / 2, token);
-
                 if (account.ToBeDeleteInstances.Any() || account.ToBeRebootInstances.Any())
                 {
                     step = "instancesElm";

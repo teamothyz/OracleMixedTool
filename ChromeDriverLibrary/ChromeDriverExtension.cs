@@ -41,6 +41,16 @@ namespace ChromeDriverLibrary
             }, token);
         }
 
+        public static void ScrollTo(this UndetectedChromeDriver driver, string selector, int timeout, CancellationToken token)
+        {
+            var waiter = GetWaiter(driver, timeout);
+            waiter.Until(webdriver =>
+            {
+                driver.ExecuteScript($"document.querySelector('{selector}').scrollIntoView()");
+                return true;
+            }, token);
+        }
+
         public static void Click(this UndetectedChromeDriver driver, string selector, int timeout, CancellationToken token)
         {
             var waiter = GetWaiter(driver, timeout);
