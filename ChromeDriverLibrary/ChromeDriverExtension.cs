@@ -51,6 +51,28 @@ namespace ChromeDriverLibrary
             }, token);
         }
 
+        public static void Sendkeys(this UndetectedChromeDriver driver, string selector, string content, bool needCompare, int timeout, CancellationToken token)
+        {
+            var waiter = GetWaiter(driver, timeout);
+            waiter.Until(webdriver =>
+            {
+                var element = driver.FindElement(By.CssSelector(selector));
+                try
+                {
+                    element.Click();
+                    Thread.Sleep(500);
+                    element.Clear();
+                    Thread.Sleep(500);
+                }
+                catch { }
+
+                element.SendKeys(content);
+                Thread.Sleep(500);
+                if (!needCompare) return true;
+                return CompareContent(driver, element, content);
+            }, token);
+        }
+
         public static void Click(this UndetectedChromeDriver driver, string selector, int timeout, CancellationToken token)
         {
             var waiter = GetWaiter(driver, timeout);

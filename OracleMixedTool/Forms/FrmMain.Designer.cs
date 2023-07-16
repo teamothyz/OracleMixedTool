@@ -41,7 +41,6 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
             this.TotalAccountTxtBox = new Krypton.Toolkit.KryptonTextBox();
             this.SuccessAccountTxtBox = new Krypton.Toolkit.KryptonTextBox();
             this.FailedAccountTxtBox = new Krypton.Toolkit.KryptonTextBox();
@@ -77,6 +76,7 @@
             this.CaptureInstanceCheckBox = new Krypton.Toolkit.KryptonCheckBox();
             this.ClickCookieCheckBox = new Krypton.Toolkit.KryptonCheckBox();
             this.ChangePassCheckBox = new Krypton.Toolkit.KryptonCheckBox();
+            this.PasteSSHCheckBox = new Krypton.Toolkit.KryptonCheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.ProxyComboBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -212,17 +212,6 @@
             this.label13.TabIndex = 12;
             this.label13.Text = "Extension:";
             // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.label14.Location = new System.Drawing.Point(12, 492);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(65, 15);
-            this.label14.TabIndex = 13;
-            this.label14.Text = "Trạng thái:";
-            // 
             // TotalAccountTxtBox
             // 
             this.TotalAccountTxtBox.Location = new System.Drawing.Point(149, 10);
@@ -297,10 +286,10 @@
             // 
             // StatusTxtBox
             // 
-            this.StatusTxtBox.Location = new System.Drawing.Point(149, 484);
+            this.StatusTxtBox.Location = new System.Drawing.Point(309, 443);
             this.StatusTxtBox.Name = "StatusTxtBox";
             this.StatusTxtBox.ReadOnly = true;
-            this.StatusTxtBox.Size = new System.Drawing.Size(134, 23);
+            this.StatusTxtBox.Size = new System.Drawing.Size(122, 23);
             this.StatusTxtBox.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.StatusTxtBox.StateCommon.Content.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.StatusTxtBox.TabIndex = 20;
@@ -341,7 +330,7 @@
             this.DelayChangePassUpdown.StateCommon.Content.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.DelayChangePassUpdown.TabIndex = 22;
             this.DelayChangePassUpdown.Value = new decimal(new int[] {
-            5,
+            60,
             0,
             0,
             0});
@@ -454,7 +443,7 @@
             // LoadExtensionsBtn
             // 
             this.LoadExtensionsBtn.CornerRoundingRadius = -1F;
-            this.LoadExtensionsBtn.Location = new System.Drawing.Point(308, 482);
+            this.LoadExtensionsBtn.Location = new System.Drawing.Point(308, 551);
             this.LoadExtensionsBtn.Name = "LoadExtensionsBtn";
             this.LoadExtensionsBtn.Size = new System.Drawing.Size(122, 25);
             this.LoadExtensionsBtn.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
@@ -469,7 +458,7 @@
             // ClearExtensionsBtn
             // 
             this.ClearExtensionsBtn.CornerRoundingRadius = -1F;
-            this.ClearExtensionsBtn.Location = new System.Drawing.Point(308, 519);
+            this.ClearExtensionsBtn.Location = new System.Drawing.Point(308, 584);
             this.ClearExtensionsBtn.Name = "ClearExtensionsBtn";
             this.ClearExtensionsBtn.Size = new System.Drawing.Size(122, 25);
             this.ClearExtensionsBtn.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
@@ -484,7 +473,7 @@
             // AddExtensionBtn
             // 
             this.AddExtensionBtn.CornerRoundingRadius = -1F;
-            this.AddExtensionBtn.Location = new System.Drawing.Point(308, 441);
+            this.AddExtensionBtn.Location = new System.Drawing.Point(309, 519);
             this.AddExtensionBtn.Name = "AddExtensionBtn";
             this.AddExtensionBtn.Size = new System.Drawing.Size(122, 25);
             this.AddExtensionBtn.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(64)))));
@@ -637,7 +626,7 @@
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.label15.Location = new System.Drawing.Point(12, 566);
+            this.label15.Location = new System.Drawing.Point(12, 529);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(33, 15);
             this.label15.TabIndex = 41;
@@ -645,7 +634,7 @@
             // 
             // SSHKeyTxtBox
             // 
-            this.SSHKeyTxtBox.Location = new System.Drawing.Point(149, 558);
+            this.SSHKeyTxtBox.Location = new System.Drawing.Point(149, 521);
             this.SSHKeyTxtBox.Name = "SSHKeyTxtBox";
             this.SSHKeyTxtBox.Size = new System.Drawing.Size(134, 23);
             this.SSHKeyTxtBox.StateCommon.Back.Color1 = System.Drawing.Color.Yellow;
@@ -657,7 +646,7 @@
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label16.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.label16.Location = new System.Drawing.Point(12, 529);
+            this.label16.Location = new System.Drawing.Point(12, 492);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(62, 15);
             this.label16.TabIndex = 43;
@@ -665,7 +654,7 @@
             // 
             // NewpassTxtBox
             // 
-            this.NewpassTxtBox.Location = new System.Drawing.Point(149, 521);
+            this.NewpassTxtBox.Location = new System.Drawing.Point(149, 484);
             this.NewpassTxtBox.Name = "NewpassTxtBox";
             this.NewpassTxtBox.Size = new System.Drawing.Size(134, 23);
             this.NewpassTxtBox.StateCommon.Back.Color1 = System.Drawing.Color.Yellow;
@@ -714,7 +703,7 @@
             // 
             // ClickCookieCheckBox
             // 
-            this.ClickCookieCheckBox.Location = new System.Drawing.Point(308, 561);
+            this.ClickCookieCheckBox.Location = new System.Drawing.Point(309, 484);
             this.ClickCookieCheckBox.Name = "ClickCookieCheckBox";
             this.ClickCookieCheckBox.Size = new System.Drawing.Size(94, 20);
             this.ClickCookieCheckBox.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -726,7 +715,7 @@
             // 
             // ChangePassCheckBox
             // 
-            this.ChangePassCheckBox.Location = new System.Drawing.Point(308, 591);
+            this.ChangePassCheckBox.Location = new System.Drawing.Point(149, 561);
             this.ChangePassCheckBox.Name = "ChangePassCheckBox";
             this.ChangePassCheckBox.Size = new System.Drawing.Size(96, 20);
             this.ChangePassCheckBox.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -735,12 +724,25 @@
             this.ChangePassCheckBox.TabIndex = 48;
             this.ChangePassCheckBox.Values.Text = "Change Pass";
             // 
+            // PasteSSHCheckBox
+            // 
+            this.PasteSSHCheckBox.Location = new System.Drawing.Point(149, 589);
+            this.PasteSSHCheckBox.Name = "PasteSSHCheckBox";
+            this.PasteSSHCheckBox.Size = new System.Drawing.Size(81, 20);
+            this.PasteSSHCheckBox.StateCommon.ShortText.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.PasteSSHCheckBox.StateCommon.ShortText.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.PasteSSHCheckBox.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.PasteSSHCheckBox.TabIndex = 49;
+            this.PasteSSHCheckBox.Values.Text = "Paste SSH";
+            this.PasteSSHCheckBox.CheckedChanged += new System.EventHandler(this.PasteSSHCheckBox_CheckedChanged);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.ClientSize = new System.Drawing.Size(452, 621);
+            this.Controls.Add(this.PasteSSHCheckBox);
             this.Controls.Add(this.ChangePassCheckBox);
             this.Controls.Add(this.ClickCookieCheckBox);
             this.Controls.Add(this.CaptureInstanceCheckBox);
@@ -776,7 +778,6 @@
             this.Controls.Add(this.FailedAccountTxtBox);
             this.Controls.Add(this.SuccessAccountTxtBox);
             this.Controls.Add(this.TotalAccountTxtBox);
-            this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
@@ -816,7 +817,6 @@
         private Label label11;
         private Label label12;
         private Label label13;
-        private Label label14;
         private Krypton.Toolkit.KryptonTextBox TotalAccountTxtBox;
         private Krypton.Toolkit.KryptonTextBox SuccessAccountTxtBox;
         private Krypton.Toolkit.KryptonTextBox FailedAccountTxtBox;
@@ -852,5 +852,6 @@
         private Krypton.Toolkit.KryptonCheckBox CaptureInstanceCheckBox;
         private Krypton.Toolkit.KryptonCheckBox ClickCookieCheckBox;
         private Krypton.Toolkit.KryptonCheckBox ChangePassCheckBox;
+        private Krypton.Toolkit.KryptonCheckBox PasteSSHCheckBox;
     }
 }

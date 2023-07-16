@@ -11,23 +11,30 @@ namespace OracleMixedTool.Services
     {
         private static readonly object _lockClipboard = new();
         public static int DefaultTimeout { get; set; } = 30;
-        public static int DefaultWaitChangePass { get; set; } = 5;
+        public static int DefaultWaitChangePass { get; set; } = 60;
         public static int DefaultWaitDelete { get; set; } = 60;
         public static int DefaultWaitReboot { get; set; } = 60;
         public static int DefaultWaitCreateNew { get; set; } = 60;
 
         public static async Task<Tuple<bool, string>> EnterTenant(UndetectedChromeDriver driver, Account account, CancellationToken token)
         {
-            var url = $"https://cloud.oracle.com/?tenant={account.Email.Split('@')[0]}";
             var step = "GoToUrl";
             try
             {
-                driver.GoToUrl(url);
+                driver.GoToUrl("https://www.oracle.com/cloud/sign-in.html");
+                await Task.Delay(3000, token).ConfigureAwait(false);
 
                 step = "HandleCookieAccept";
-                await HandleCookieAccept(driver, token);
-                await Task.Delay(DefaultTimeout * 500, token);
+                await HandleCookieAccept(driver, token).ConfigureAwait(false);
 
+                step = "cloudAccountName";
+                driver.Sendkeys("#cloudAccountName", account.Email.Split('@')[0], true, DefaultTimeout, token);
+                await Task.Delay(1000, token).ConfigureAwait(false);
+
+                step = "cloudAccountButton";
+                driver.Click("#cloudAccountButton", DefaultTimeout, token);
+                await Task.Delay(DefaultTimeout * 1000, token);
+                
                 if (driver.Url.Contains("oraclecloud.com/v1/oauth2/authorize"))
                 {
                     step = "submitFederationBtn";
@@ -47,7 +54,7 @@ namespace OracleMixedTool.Services
                 }
 
                 if (driver.Url.Contains("identity.oraclecloud.com/ui/v1/signin")) return Tuple.Create(true, string.Empty);
-                else return Tuple.Create(false, $"can not load page: {url}");
+                else return Tuple.Create(false, $"can not load tenant page");
             }
             catch (Exception ex)
             {
@@ -536,7 +543,14 @@ namespace OracleMixedTool.Services
                 await Task.Delay(2000, token);
                 driver.ClickByJS(@"[id=""oui-radio-ssh-key-from-textarea""]", DefaultTimeout, token);
 
-                Paste(driver, @"[name=""sshKey""]", key, true, DefaultTimeout, token);
+                if (FrmMain.Paste)
+                {
+                    Paste(driver, @"[name=""sshKey""]", key, true, DefaultTimeout, token);
+                }
+                else
+                {
+                    driver.Sendkeys(@"[name=""sshKey""]", key, true, DefaultTimeout, token);
+                }
             }
             catch (Exception ex)
             {

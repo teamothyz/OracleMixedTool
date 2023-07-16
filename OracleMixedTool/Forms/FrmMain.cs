@@ -8,6 +8,7 @@ namespace OracleMixedTool.Forms
     public partial class FrmMain : Form
     {
         public static FrmMain Instance { get; private set; } = null!;
+        public static bool Paste { get; private set; } = false;
 
         public static bool ClickCookie { get; private set; } = false;
 
@@ -504,6 +505,11 @@ namespace OracleMixedTool.Forms
         private void ClickCookieCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             ClickCookie = ClickCookieCheckBox.Checked;
+        }
+
+        private void PasteSSHCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Paste = PasteSSHCheckBox.Checked;
         }
     }
 }
