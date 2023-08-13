@@ -34,7 +34,7 @@ namespace OracleMixedTool.Services
                 step = "cloudAccountButton";
                 driver.Click("#cloudAccountButton", DefaultTimeout, token);
                 await Task.Delay(DefaultTimeout * 1000, token);
-                
+
                 if (driver.Url.Contains("oraclecloud.com/v1/oauth2/authorize"))
                 {
                     step = "submitFederationBtn";
@@ -107,6 +107,8 @@ namespace OracleMixedTool.Services
                 await Task.Delay(DefaultTimeout * 1000, token);
                 if (driver.Url.Contains("https://cloud.oracle.com/?region=")) return Tuple.Create(true, string.Empty, tenantUrl);
                 if (driver.Url.Contains("identity.oraclecloud.com/ui/v1/pwdmustchange")) return Tuple.Create(true, "pwdmustchange", tenantUrl);
+                
+                if (Check2FA(driver, token)) return Tuple.Create(false, $"Login failed due to [2FA]", string.Empty);
                 if (driver.Url.Contains("oraclecloud.com/ui/v1/signin")) return Tuple.Create(false, "login failed or can not load the next page", string.Empty);
                 else return Tuple.Create(false, "login failed or can not load the next page", string.Empty);
             }
@@ -115,6 +117,16 @@ namespace OracleMixedTool.Services
                 DataHandler.WriteLog($"[Login] {step}", ex);
                 return Tuple.Create(false, $"[Login] {step} {ex.Message}", string.Empty);
             }
+        }
+
+        private static bool Check2FA(UndetectedChromeDriver driver, CancellationToken token)
+        {
+            try
+            {
+                var _2faElm = driver.FindElement("#ui-id-1", 5, token);
+                return _2faElm.Text.Contains("Enable Secure Verification");
+            }
+            catch { return false; }
         }
 
         public static async Task<Tuple<bool, string>> ChangePasswordMustChange(UndetectedChromeDriver driver, Account account, CancellationToken token)
